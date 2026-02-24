@@ -1,0 +1,406 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+  background: #f5f5f5;
+  color: #333;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.header h1 {
+  font-size: 32px;
+  color: #2E86AB;
+}
+
+.emoji {
+  font-size: 32px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 20px 0;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 20px;
+}
+
+.sidebar {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.sidebar h3 {
+  font-size: 14px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-btn {
+  padding: 10px 15px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background: #e8f4f8;
+  border-color: #2E86AB;
+  color: #2E86AB;
+}
+
+.nav-btn.active {
+  background: #2E86AB;
+  color: white;
+  border-color: #2E86AB;
+}
+
+.sidebar-section {
+  margin-top: 30px;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #2E86AB;
+}
+
+.content {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.page {
+  min-height: 400px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2E86AB;
+  transition: width 0.3s;
+}
+
+.step-title {
+  font-size: 24px;
+  color: #2E86AB;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #2E86AB;
+  padding-bottom: 10px;
+}
+
+.step {
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2E86AB;
+  box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.upload-area {
+  border: 2px dashed #2E86AB;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-area:hover {
+  background: #e8f4f8;
+}
+
+.upload-area p {
+  color: #666;
+  font-size: 14px;
+}
+
+.success-box {
+  background: #D4EDDA;
+  border: 1px solid #28A745;
+  border-radius: 5px;
+  padding: 12px;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #155724;
+}
+
+.error-box {
+  background: #F8D7DA;
+  border: 1px solid #F5C6CB;
+  border-radius: 5px;
+  padding: 12px;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #721C24;
+}
+
+.info-box {
+  background: #D1ECF1;
+  border: 1px solid #0C5460;
+  border-radius: 5px;
+  padding: 12px;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #0C5460;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-item input {
+  width: auto;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.col-box {
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.col-box h4 {
+  margin-bottom: 15px;
+  color: #2E86AB;
+  font-size: 16px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #2E86AB;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #1e5a7a;
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #d0d0d0;
+}
+
+.btn-secondary:disabled {
+  background: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  background: #f5f5f5;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tr:hover {
+  background: #f9f9f9;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.metric-card {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 15px;
+  text-align: center;
+}
+
+.metric-card .value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2E86AB;
+  margin-bottom: 5px;
+}
+
+.metric-card .label {
+  font-size: 12px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row,
+  .two-col,
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: relative;
+    top: 0;
+  }
+}

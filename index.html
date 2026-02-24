@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSeal Insulation Takeoff System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #2E86AB;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            margin: 20px 0;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .sidebar h3 {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .nav-btn {
+            padding: 10px 15px;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: #e8f4f8;
+            border-color: #2E86AB;
+            color: #2E86AB;
+        }
+        
+        .nav-btn.active {
+            background: #2E86AB;
+            color: white;
+            border-color: #2E86AB;
+        }
+        
+        .sidebar-section {
+            margin-top: 30px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #2E86AB;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #2E86AB;
+            transition: width 0.3s;
+        }
+        
+        .step-title {
+            font-size: 24px;
+            color: #2E86AB;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2E86AB;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2E86AB;
+            box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #2E86AB;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-area:hover {
+            background: #e8f4f8;
+        }
+        
+        .upload-area p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .success-box {
+            background: #D4EDDA;
+            border: 1px solid #28A745;
+            border-radius: 5px;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #155724;
+        }
+        
+        .info-box {
+            background: #D1ECF1;
+            border: 1px solid #0C5460;
+            border-radius: 5px;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #0C5460;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-item input {
+            width: auto;
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .col-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        
+        .col-box h4 {
+            margin-bottom: 15px;
+            color: #2E86AB;
+            font-size: 16px;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #2E86AB;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e5a7a;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2E86AB;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card .label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .step {
+            display: none;
+        }
+        
+        .step.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <span style="font-size: 32px;">🔧</span>
+            <h1>EcoSeal Insulation Takeoff System</h1>
+        </div>
+        <p class="subtitle">Fast, accurate insulation quantity takeoffs from architectural plans</p>
+        <hr>
+        
+        <!-- Main Layout -->
+        <div class="main-content">
+            
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>📋 Navigation</h3>
+                <div class="nav-items">
+                    <button class="nav-btn active" onclick="switchPage('new-takeoff')">New Takeoff</button>
+                    <button class="nav-btn" onclick="switchPage('recent')">Recent Projects</button>
+                    <button class="nav-btn" onclick="switchPage('settings')">Settings</button>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 style="margin-top: 0;">Quick Stats</h3>
+                    <div class="metric">
+                        <span>Projects this month</span>
+                        <span class="metric-value">12</span>
+                    </div>
+                    <div class="metric">
+                        <span>Total takeoffs</span>
+                        <span class="metric-value">47</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 style="margin-top: 0;">About</h3>
+                    <p style="font-size: 12px; color: #666; line-height: 1.5;">
+                        Streamlit Interface (v0.1)<br><br>
+                        Backend: Coming soon<br><br>
+                        <a href="#" style="color: #2E86AB; text-decoration: none;">Documentation</a> | 
+                        <a href="#" style="color: #2E86AB; text-decoration: none;">Support</a>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="content">
+                
+                <!-- NEW TAKEOFF PAGE -->
+                <div id="new-takeoff" class="page active">
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <p style="text-align: right; font-size: 13px; color: #666; margin-bottom: 30px;">
+                        Step <span id="stepNum">0</span> of 7
+                    </p>
+                    
+                    <!-- STEP 0: Project Info -->
+                    <div class="step active" id="step-0">
+                        <div class="step-title">Step 0️⃣ Project Information</div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Project Name *</label>
+                                <input type="text" id="projectName" placeholder="e.g., Riverside Towers Phase 2B">
+                            </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="projectDate">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Project Notes (optional)</label>
+                            <textarea placeholder="e.g., Multi-family residential, 5 storeys, wood frame..."></textarea>
+                        </div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" disabled>← Back</button>
+                            <button class="btn-primary" onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 1: Upload PDF -->
+                    <div class="step" id="step-1">
+                        <div class="step-title">Step 1️⃣ Upload Plan PDF</div>
+                        
+                        <div class="info-box">📄 <b>Supported formats:</b> PDF (vector or scanned)</div>
+                        
+                        <div class="form-group">
+                            <div class="upload-area" onclick="document.getElementById('pdfUpload').click()">
+                                <p style="font-size: 18px; margin-bottom: 10px;">📤 Drop PDF here</p>
+                                <p>or click to browse</p>
+                                <input type="file" id="pdfUpload" accept=".pdf" style="display: none;" onchange="handlePdfUpload()">
+                            </div>
+                            <div id="uploadStatus"></div>
+                        </div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" id="nextBtn1" disabled onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 2: Select Sheets -->
+                    <div class="step" id="step-2">
+                        <div class="step-title">Step 2️⃣ Select Floor Plan & Schedule Sheets</div>
+                        
+                        <p style="margin-bottom: 20px;"><b>Available pages in PDF:</b></p>
+                        
+                        <div class="two-col">
+                            <div class="col-box">
+                                <h4>Floor Plan Sheets</h4>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" checked> <label>Page 1: Floor Plan L2-3</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" checked> <label>Page 2: Floor Plan L3-4</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox"> <label>Page 3: Floor Plan L4-5</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-box">
+                                <h4>Section & Schedule</h4>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox"> <label>Page 4: Section A-A</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" checked> <label>Page 5: Wall Schedule</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox"> <label>Page 6: Details</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 3: Scale Detection -->
+                    <div class="step" id="step-3">
+                        <div class="step-title">Step 3️⃣ Scale Detection & Calibration</div>
+                        
+                        <div class="two-col">
+                            <div class="col-box">
+                                <h4>🔍 Auto-Detect</h4>
+                                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">System will look for scale ruler on the plan...</p>
+                                <button class="btn-primary" onclick="autoDetectScale()" style="width: 100%;">Try Auto-Detect</button>
+                                <div id="autoDetectResult"></div>
+                            </div>
+                            
+                            <div class="col-box">
+                                <h4>📏 Manual Calibration</h4>
+                                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">If auto-detect fails, calibrate manually:</p>
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <input type="number" placeholder="Distance (pixels)" value="100">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <input type="number" placeholder="Actual distance (feet)" value="10">
+                                </div>
+                                <button class="btn-primary" onclick="manualScale()" style="width: 100%;">Set Scale</button>
+                                <div id="manualScaleResult"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="scaleStatus"></div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" id="nextBtn3" disabled onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 4: Extract Boundary -->
+                    <div class="step" id="step-4">
+                        <div class="step-title">Step 4️⃣ Extract Building Boundary</div>
+                        
+                        <div class="info-box">Processing floor plan pages...</div>
+                        
+                        <div style="margin: 30px 0;">
+                            <div class="progress-bar" style="height: 8px;">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="success-box">
+                            <b>✓ Boundary extracted from Page 1 (L2-3):</b><br>
+                            &nbsp;&nbsp; Perimeter: <b>520.0 ft</b><br>
+                            &nbsp;&nbsp; Area: <b>38,440 sqft</b><br><br>
+                            <b>✓ Boundary extracted from Page 2 (L3-4):</b><br>
+                            &nbsp;&nbsp; Perimeter: <b>520.0 ft</b><br>
+                            &nbsp;&nbsp; Area: <b>38,440 sqft</b>
+                        </div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 5: Wall Schedule -->
+                    <div class="step" id="step-5">
+                        <div class="step-title">Step 5️⃣ Extract Wall Assemblies</div>
+                        
+                        <div class="info-box">Reading Wall Schedule (Page 5) with Claude...</div>
+                        
+                        <div style="margin: 30px 0;">
+                            <div class="progress-bar" style="height: 8px;">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="success-box">
+                            <b>✓ Schedule extracted successfully</b><br>
+                            ✓ Found 3 wall types with assemblies
+                        </div>
+                        
+                        <p style="margin: 20px 0;"><b>Detected Wall Assemblies:</b></p>
+                        
+                        <div class="table-container">
+                            <table>
+                                <tr>
+                                    <th>Wall Type</th>
+                                    <th>Description</th>
+                                    <th>Assembly</th>
+                                    <th>R-Value</th>
+                                    <th>Material</th>
+                                </tr>
+                                <tr>
+                                    <td><b>EW-1</b></td>
+                                    <td>Exterior Wall</td>
+                                    <td>2x4 studs, 1.5" ccSPF, 6mil poly</td>
+                                    <td>R-24</td>
+                                    <td>ccSPF</td>
+                                </tr>
+                                <tr>
+                                    <td><b>EW-2</b></td>
+                                    <td>Parapet</td>
+                                    <td>2x6 studs, 3.5" ccSPF, 6mil poly</td>
+                                    <td>R-30</td>
+                                    <td>ccSPF</td>
+                                </tr>
+                                <tr>
+                                    <td><b>IW-1</b></td>
+                                    <td>Interior Wall (optional)</td>
+                                    <td>3.5" batt + 6mil poly</td>
+                                    <td>R-13</td>
+                                    <td>Batt</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <p style="margin-top: 20px; font-size: 13px; color: #666;">Note: Tables are editable in the full version</p>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 6: Floor Heights -->
+                    <div class="step" id="step-6">
+                        <div class="step-title">Step 6️⃣ Specify Floor Heights</div>
+                        
+                        <p style="margin-bottom: 10px;"><b>Enter the height for each floor level:</b></p>
+                        <div class="info-box">Tip: Find these dimensions in the section views (e.g., Section A-A)</div>
+                        
+                        <div style="margin: 30px 0;">
+                            <div class="form-row">
+                                <div>
+                                    <h4 style="margin-bottom: 15px;">Level 2-3</h4>
+                                    <div class="form-group">
+                                        <label>Height (feet)</label>
+                                        <input type="number" value="10.0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Wall Assembly</label>
+                                        <select>
+                                            <option selected>EW-1</option>
+                                            <option>EW-2</option>
+                                            <option>IW-1</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 style="margin-bottom: 15px;">Level 3-4</h4>
+                                    <div class="form-group">
+                                        <label>Height (feet)</label>
+                                        <input type="number" value="10.5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Wall Assembly</label>
+                                        <select>
+                                            <option selected>EW-1</option>
+                                            <option>EW-2</option>
+                                            <option>IW-1</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin: 30px 0;">
+                            <div class="form-row">
+                                <div>
+                                    <h4 style="margin-bottom: 15px;">Level 4-5</h4>
+                                    <div class="form-group">
+                                        <label>Height (feet)</label>
+                                        <input type="number" value="10.0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Wall Assembly</label>
+                                        <select>
+                                            <option selected>EW-1</option>
+                                            <option>EW-2</option>
+                                            <option>IW-1</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 style="margin-bottom: 15px;">Roof Parapet</h4>
+                                    <div class="form-group">
+                                        <label>Height (feet)</label>
+                                        <input type="number" value="4.0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Wall Assembly</label>
+                                        <select>
+                                            <option>EW-1</option>
+                                            <option selected>EW-2</option>
+                                            <option>IW-1</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" onclick="nextStep()">Next →</button>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 7: Review & Export -->
+                    <div class="step" id="step-7">
+                        <div class="step-title">Step 7️⃣ Review & Export</div>
+                        
+                        <h3 style="margin: 30px 0 20px 0; color: #333;">📊 Takeoff Summary</h3>
+                        
+                        <div class="table-container">
+                            <table>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>R-Value</th>
+                                </tr>
+                                <tr>
+                                    <td>ccSPF (Spray Foam)</td>
+                                    <td><b>17,140 sqft</b></td>
+                                    <td>R-24 avg</td>
+                                </tr>
+                                <tr>
+                                    <td>Batt Insulation</td>
+                                    <td>0 sqft</td>
+                                    <td>N/A</td>
+                                </tr>
+                                <tr>
+                                    <td>Sealant/Firestopping</td>
+                                    <td>2,080 lf</td>
+                                    <td>N/A</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="value">17,140 sqft</div>
+                                <div class="label">Total ccSPF</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="value">520 ft</div>
+                                <div class="label">Total Perimeter</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="value">R-27</div>
+                                <div class="label">Avg R-Value</div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 20px 0; color: #333;">📋 Item Breakdown</h3>
+                        
+                        <div class="table-container">
+                            <table style="font-size: 12px;">
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Wall Type</th>
+                                    <th>Material</th>
+                                    <th>Perimeter</th>
+                                    <th>Height</th>
+                                    <th>Quantity</th>
+                                    <th>R-Value</th>
+                                </tr>
+                                <tr>
+                                    <td>L2-3</td>
+                                    <td>EW-1</td>
+                                    <td>ccSPF</td>
+                                    <td>520 ft</td>
+                                    <td>10.0 ft</td>
+                                    <td><b>5,200 sqft</b></td>
+                                    <td>R-24</td>
+                                </tr>
+                                <tr>
+                                    <td>L3-4</td>
+                                    <td>EW-1</td>
+                                    <td>ccSPF</td>
+                                    <td>520 ft</td>
+                                    <td>10.5 ft</td>
+                                    <td><b>5,460 sqft</b></td>
+                                    <td>R-24</td>
+                                </tr>
+                                <tr>
+                                    <td>L4-5</td>
+                                    <td>EW-1</td>
+                                    <td>ccSPF</td>
+                                    <td>520 ft</td>
+                                    <td>10.0 ft</td>
+                                    <td><b>5,200 sqft</b></td>
+                                    <td>R-24</td>
+                                </tr>
+                                <tr>
+                                    <td>Parapet</td>
+                                    <td>EW-2</td>
+                                    <td>ccSPF</td>
+                                    <td>520 ft</td>
+                                    <td>4.0 ft</td>
+                                    <td><b>2,080 sqft</b></td>
+                                    <td>R-30</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 20px 0; color: #333;">✓ Data Confidence</h3>
+                        
+                        <div class="metrics-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                            <div style="background: #D4EDDA; padding: 15px; border-radius: 5px; text-align: center; font-size: 13px;">
+                                🟢 <b>Scale:</b> Verified<br><small>(auto-detected)</small>
+                            </div>
+                            <div style="background: #D4EDDA; padding: 15px; border-radius: 5px; text-align: center; font-size: 13px;">
+                                🟢 <b>Boundary:</b> Verified<br><small>(vector PDF)</small>
+                            </div>
+                            <div style="background: #D4EDDA; padding: 15px; border-radius: 5px; text-align: center; font-size: 13px;">
+                                🟢 <b>Assemblies:</b> Confirmed<br><small>(user reviewed)</small>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 30px 0 20px 0; color: #333;">📥 Download Results</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px;">
+                            <button class="btn-primary" style="width: 100%;">📥 CSV</button>
+                            <button class="btn-primary" style="width: 100%;">📄 PDF Report</button>
+                            <button class="btn-primary" style="width: 100%;">💾 Save Project</button>
+                        </div>
+                        
+                        <hr style="margin: 30px 0;">
+                        
+                        <div class="buttons">
+                            <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                            <button class="btn-primary" onclick="newTakeoff()">✨ New Takeoff</button>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <!-- RECENT PROJECTS PAGE -->
+                <div id="recent" class="page hidden">
+                    <div class="step-title">📂 Recent Projects</div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <tr>
+                                <th>Project</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total ccSPF</th>
+                            </tr>
+                            <tr>
+                                <td><b>Riverside Towers Phase 2B</b></td>
+                                <td>2026-02-24</td>
+                                <td>✓ Complete</td>
+                                <td>17,140 sqft</td>
+                            </tr>
+                            <tr>
+                                <td><b>Downtown Infill (King St)</b></td>
+                                <td>2026-02-22</td>
+                                <td>⏳ In Progress</td>
+                                <td>8,920 sqft</td>
+                            </tr>
+                            <tr>
+                                <td><b>Lakefront Residences</b></td>
+                                <td>2026-02-20</td>
+                                <td>✓ Complete</td>
+                                <td>12,500 sqft</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <hr style="margin: 30px 0;">
+                    
+                    <button class="btn-primary" onclick="switchToNewTakeoff()" style="width: 100%;">+ Create New Takeoff</button>
+                </div>
+                
+                <!-- SETTINGS PAGE -->
+                <div id="settings" class="page hidden">
+                    <div class="step-title">⚙️ Settings</div>
+                    
+                    <h3 style="margin: 30px 0 20px 0;">API Configuration</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Anthropic API Key</label>
+                            <input type="password" placeholder="Enter your API key...">
+                            <small style="color: #666;">Required for Claude schedule reading</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Claude Model</label>
+                            <select>
+                                <option selected>claude-3-5-sonnet-20241022</option>
+                                <option>claude-3-opus-20240229</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 30px 0 20px 0;">Takeoff Preferences</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Default Insulation Material</label>
+                            <select>
+                                <option selected>ccSPF</option>
+                                <option>Batt</option>
+                                <option>Blown-in</option>
+                                <option>Polyiso</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Measurement Tolerance (%)</label>
+                            <input type="number" value="5" min="1" max="20">
+                        </div>
+                    </div>
+                    
+                    <hr style="margin: 30px 0;">
+                    
+                    <div class="buttons">
+                        <button class="btn-primary" style="width: 100%;">💾 Save Settings</button>
+                        <button class="btn-secondary" style="width: 100%;">🔄 Reset to Defaults</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize
+        document.getElementById('projectDate').valueAsDate = new Date();
+        let currentStep = 0;
+        let scaleDetected = false;
+        let pdfUploaded = false;
+        
+        function updateProgress() {
+            const pct = (currentStep / 7) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('stepNum').textContent = currentStep;
+        }
+        
+        function showStep(n) {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => step.classList.remove('active'));
+            if (document.getElementById('step-' + n)) {
+                document.getElementById('step-' + n).classList.add('active');
+            }
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+        
+        function nextStep() {
+            if (currentStep === 0 && !document.getElementById('projectName').value) {
+                alert('Please enter a project name');
+                return;
+            }
+            if (currentStep < 7) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+        
+        function newTakeoff() {
+            currentStep = 0;
+            document.getElementById('projectName').value = '';
+            showStep(0);
+        }
+        
+        function switchToNewTakeoff() {
+            switchPage('new-takeoff');
+            newTakeoff();
+        }
+        
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(page).classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            if (page === 'new-takeoff') {
+                document.querySelector('.page:not(.hidden)').style.display = 'block';
+            }
+        }
+        
+        function handlePdfUpload() {
+            const input = document.getElementById('pdfUpload');
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                document.getElementById('uploadStatus').innerHTML = `
+                    <div class="success-box">
+                    ✓ <b>File uploaded:</b> ${file.name}<br>
+                    ✓ <b>Format:</b> Vector PDF (extractable)
+                    </div>
+                `;
+                pdfUploaded = true;
+                document.getElementById('nextBtn1').disabled = false;
+            }
+        }
+        
+        function autoDetectScale() {
+            document.getElementById('autoDetectResult').innerHTML = `
+                <div class="success-box" style="margin-top: 15px;">
+                ✓ <b>Scale detected:</b> 1/8" = 1'<br>
+                ✓ <b>Confidence:</b> HIGH<br>
+                ✓ <b>Scale factor:</b> 0.0533 pixels/foot
+                </div>
+            `;
+            scaleDetected = true;
+            updateScaleStatus();
+        }
+        
+        function manualScale() {
+            document.getElementById('manualScaleResult').innerHTML = `
+                <div class="success-box" style="margin-top: 15px;">
+                ✓ <b>Scale set:</b> 0.0533 pixels/foot
+                </div>
+            `;
+            scaleDetected = true;
+            updateScaleStatus();
+        }
+        
+        function updateScaleStatus() {
+            if (scaleDetected) {
+                document.getElementById('scaleStatus').innerHTML = `
+                    <div class="info-box">✓ Scale calibrated</div>
+                `;
+                document.getElementById('nextBtn3').disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
