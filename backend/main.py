@@ -3,15 +3,20 @@ EcoSeal Insulation Takeoff System - FastAPI Backend
 Real data, real API, real database
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
 import json
 import os
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # DATABASE SETUP
@@ -97,6 +102,23 @@ class ProjectCreate(BaseModel):
     name: str
     notes: str = None
     date: str = None
+    
+    @validator('name')
+    def name_not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Project name cannot be empty')
+        if len(v) > 255:
+            raise ValueError('Project name must be less than 255 characters')
+        return v.strip()
+    
+    @validator('date')
+    def date_valid(cls, v):
+        if v:
+            try:
+                datetime.fromisoformat(v)
+            except ValueError:
+                raise ValueError('Invalid date format. Use ISO format (YYYY-MM-DD)')
+        return v
 
 class ProjectResponse(BaseModel):
     id: int
@@ -121,6 +143,19 @@ class TakeoffItem(BaseModel):
     perimeter_ft: float
     height_ft: float
     confidence: str = "GREEN"
+    
+    @validator('quantity', 'perimeter_ft', 'height_ft')
+    def positive_numbers(cls, v):
+        if v < 0:
+            raise ValueError('Values must be positive numbers')
+        return v
+    
+    @validator('confidence')
+    def valid_confidence(cls, v):
+        valid = ["GREEN", "YELLOW", "RED"]
+        if v not in valid:
+            raise ValueError(f'Confidence must be one of {valid}')
+        return v
 
 class TakeoffResponse(BaseModel):
     id: int
@@ -154,7 +189,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -162,6 +197,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request, call_next):
+    """Log all incoming requests"""
+    response = await call_next(request)
+    logger.info(f"{request.method} {request.url.path} - Status: {response.status_code}")
+    return response
 
 # ============================================================================
 # DATABASE DEPENDENCY
@@ -179,27 +222,33 @@ def get_db():
 # ============================================================================
 
 @app.post("/api/projects", response_model=ProjectResponse)
-def create_project(project: ProjectCreate, db: Session = next(get_db())):
+def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
     """Create a new project"""
-    db_project = ProjectDB(
-        name=project.name,
-        notes=project.notes,
-        date=datetime.fromisoformat(project.date) if project.date else datetime.utcnow(),
-        status="draft"
-    )
-    db.add(db_project)
-    db.commit()
-    db.refresh(db_project)
-    return db_project
+    try:
+        db_project = ProjectDB(
+            name=project.name,
+            notes=project.notes,
+            date=datetime.fromisoformat(project.date) if project.date else datetime.utcnow(),
+            status="draft"
+        )
+        db.add(db_project)
+        db.commit()
+        db.refresh(db_project)
+        logger.info(f"Created project: {db_project.id} - {db_project.name}")
+        return db_project
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to create project: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create project: {str(e)}")
 
 @app.get("/api/projects", response_model=list[ProjectResponse])
-def list_projects(db: Session = next(get_db())):
+def list_projects(db: Session = Depends(get_db)):
     """List all projects"""
     projects = db.query(ProjectDB).order_by(ProjectDB.created_at.desc()).all()
     return projects
 
 @app.get("/api/projects/{project_id}", response_model=ProjectResponse)
-def get_project(project_id: int, db: Session = next(get_db())):
+def get_project(project_id: int, db: Session = Depends(get_db)):
     """Get a specific project"""
     project = db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
     if not project:
@@ -207,7 +256,7 @@ def get_project(project_id: int, db: Session = next(get_db())):
     return project
 
 @app.put("/api/projects/{project_id}", response_model=ProjectResponse)
-def update_project(project_id: int, project: ProjectCreate, db: Session = next(get_db())):
+def update_project(project_id: int, project: ProjectCreate, db: Session = Depends(get_db)):
     """Update a project"""
     db_project = db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
     if not db_project:
@@ -224,7 +273,7 @@ def update_project(project_id: int, project: ProjectCreate, db: Session = next(g
     return db_project
 
 @app.delete("/api/projects/{project_id}")
-def delete_project(project_id: int, db: Session = next(get_db())):
+def delete_project(project_id: int, db: Session = Depends(get_db)):
     """Delete a project"""
     db_project = db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
     if not db_project:
@@ -239,39 +288,48 @@ def delete_project(project_id: int, db: Session = next(get_db())):
 # ============================================================================
 
 @app.post("/api/projects/{project_id}/takeoffs", response_model=TakeoffResponse)
-def create_takeoff(project_id: int, takeoff: TakeoffItem, db: Session = next(get_db())):
+def create_takeoff(project_id: int, takeoff: TakeoffItem, db: Session = Depends(get_db)):
     """Create a takeoff item for a project"""
-    # Verify project exists
-    project = db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-    
-    db_takeoff = TakeoffDB(
-        project_id=project_id,
-        level=takeoff.level,
-        wall_type=takeoff.wall_type,
-        material_type=takeoff.material_type,
-        quantity=takeoff.quantity,
-        unit=takeoff.unit,
-        assembly=takeoff.assembly,
-        r_value=takeoff.r_value,
-        perimeter_ft=takeoff.perimeter_ft,
-        height_ft=takeoff.height_ft,
-        confidence=takeoff.confidence
-    )
-    db.add(db_takeoff)
-    db.commit()
-    db.refresh(db_takeoff)
-    return db_takeoff
+    try:
+        # Verify project exists
+        project = db.query(ProjectDB).filter(ProjectDB.id == project_id).first()
+        if not project:
+            logger.warning(f"Project {project_id} not found for takeoff creation")
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        db_takeoff = TakeoffDB(
+            project_id=project_id,
+            level=takeoff.level,
+            wall_type=takeoff.wall_type,
+            material_type=takeoff.material_type,
+            quantity=takeoff.quantity,
+            unit=takeoff.unit,
+            assembly=takeoff.assembly,
+            r_value=takeoff.r_value,
+            perimeter_ft=takeoff.perimeter_ft,
+            height_ft=takeoff.height_ft,
+            confidence=takeoff.confidence
+        )
+        db.add(db_takeoff)
+        db.commit()
+        db.refresh(db_takeoff)
+        logger.info(f"Created takeoff {db_takeoff.id} for project {project_id}")
+        return db_takeoff
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to create takeoff for project {project_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create takeoff: {str(e)}")
 
 @app.get("/api/projects/{project_id}/takeoffs", response_model=list[TakeoffResponse])
-def list_takeoffs(project_id: int, db: Session = next(get_db())):
+def list_takeoffs(project_id: int, db: Session = Depends(get_db)):
     """List all takeoff items for a project"""
     takeoffs = db.query(TakeoffDB).filter(TakeoffDB.project_id == project_id).all()
     return takeoffs
 
 @app.delete("/api/projects/{project_id}/takeoffs/{takeoff_id}")
-def delete_takeoff(project_id: int, takeoff_id: int, db: Session = next(get_db())):
+def delete_takeoff(project_id: int, takeoff_id: int, db: Session = Depends(get_db)):
     """Delete a takeoff item"""
     db_takeoff = db.query(TakeoffDB).filter(
         TakeoffDB.id == takeoff_id,
@@ -289,7 +347,7 @@ def delete_takeoff(project_id: int, takeoff_id: int, db: Session = next(get_db()
 # ============================================================================
 
 @app.post("/api/settings")
-def update_setting(setting: SettingUpdate, db: Session = next(get_db())):
+def update_setting(setting: SettingUpdate, db: Session = Depends(get_db)):
     """Update a setting"""
     db_setting = db.query(SettingsDB).filter(SettingsDB.key == setting.key).first()
     
@@ -304,7 +362,7 @@ def update_setting(setting: SettingUpdate, db: Session = next(get_db())):
     return {"key": setting.key, "value": setting.value}
 
 @app.get("/api/settings/{key}")
-def get_setting(key: str, db: Session = next(get_db())):
+def get_setting(key: str, db: Session = Depends(get_db)):
     """Get a setting"""
     setting = db.query(SettingsDB).filter(SettingsDB.key == key).first()
     if not setting:
@@ -316,34 +374,67 @@ def get_setting(key: str, db: Session = next(get_db())):
 # ============================================================================
 
 @app.get("/api/stats")
-def get_stats(db: Session = next(get_db())):
-    """Get real system statistics"""
-    total_projects = db.query(ProjectDB).count()
-    complete_projects = db.query(ProjectDB).filter(ProjectDB.status == "complete").count()
-    total_takeoffs = db.query(TakeoffDB).count()
-    
-    # Calculate total ccSPF
-    total_ccspf = db.query(TakeoffDB).filter(TakeoffDB.material_type == "ccSPF").count()
-    
-    return {
-        "total_projects": total_projects,
-        "complete_projects": complete_projects,
-        "total_takeoffs": total_takeoffs,
-        "total_ccspf_items": total_ccspf,
-        "timestamp": datetime.utcnow().isoformat()
-    }
+def get_stats(db: Session = Depends(get_db)):
+    """Get real system statistics from database"""
+    try:
+        total_projects = db.query(ProjectDB).count()
+        complete_projects = db.query(ProjectDB).filter(ProjectDB.status == "complete").count()
+        in_progress_projects = db.query(ProjectDB).filter(ProjectDB.status == "in_progress").count()
+        total_takeoffs = db.query(TakeoffDB).count()
+        
+        # Material breakdown
+        total_ccspf = db.query(TakeoffDB).filter(TakeoffDB.material_type == "ccSPF").count()
+        
+        # Confidence breakdown
+        green_items = db.query(TakeoffDB).filter(TakeoffDB.confidence == "GREEN").count()
+        yellow_items = db.query(TakeoffDB).filter(TakeoffDB.confidence == "YELLOW").count()
+        red_items = db.query(TakeoffDB).filter(TakeoffDB.confidence == "RED").count()
+        
+        stats = {
+            "projects": {
+                "total": total_projects,
+                "complete": complete_projects,
+                "in_progress": in_progress_projects,
+                "draft": total_projects - complete_projects - in_progress_projects
+            },
+            "takeoffs": {
+                "total": total_takeoffs,
+                "ccspf": total_ccspf
+            },
+            "confidence": {
+                "green": green_items,
+                "yellow": yellow_items,
+                "red": red_items
+            },
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        logger.info(f"Stats retrieved: {total_projects} projects, {total_takeoffs} takeoffs")
+        return stats
+    except Exception as e:
+        logger.error(f"Failed to retrieve stats: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to retrieve stats")
 
 # ============================================================================
 # HEALTH CHECK
 # ============================================================================
 
 @app.get("/health")
-def health_check():
-    """Health check endpoint"""
+def health_check(db: Session = Depends(get_db)):
+    """Health check endpoint with database verification"""
+    try:
+        # Verify database connection
+        db.execute("SELECT 1")
+        db_status = "connected"
+    except Exception as e:
+        logger.error(f"Database health check failed: {str(e)}")
+        db_status = f"error: {str(e)}"
+    
     return {
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "service": "EcoSeal Takeoff API"
+        "service": "EcoSeal Takeoff API",
+        "database": db_status,
+        "version": "1.0.0"
     }
 
 # ============================================================================

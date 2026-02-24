@@ -182,19 +182,23 @@ export default function App() {
               <h3>📊 Real Stats</h3>
               <div className="metric">
                 <span>Total Projects</span>
-                <span className="metric-value">{stats?.total_projects || 0}</span>
+                <span className="metric-value">{stats?.projects?.total || 0}</span>
               </div>
               <div className="metric">
                 <span>Complete</span>
-                <span className="metric-value">{stats?.complete_projects || 0}</span>
+                <span className="metric-value">{stats?.projects?.complete || 0}</span>
               </div>
               <div className="metric">
                 <span>Total Takeoffs</span>
-                <span className="metric-value">{stats?.total_takeoffs || 0}</span>
+                <span className="metric-value">{stats?.takeoffs?.total || 0}</span>
               </div>
               <div className="metric">
                 <span>ccSPF Items</span>
-                <span className="metric-value">{stats?.total_ccspf_items || 0}</span>
+                <span className="metric-value">{stats?.takeoffs?.ccspf || 0}</span>
+              </div>
+              <div className="metric" style={{marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #ddd'}}>
+                <span style={{fontSize: '11px'}}>✅ Green Items</span>
+                <span className="metric-value" style={{fontSize: '14px'}}>{stats?.confidence?.green || 0}</span>
               </div>
             </div>
             
