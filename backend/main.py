@@ -17,7 +17,9 @@ import os
 # DATABASE SETUP
 # ============================================================================
 
-DATABASE_URL = "sqlite:///./takeoff.db"
+# Use /tmp for Vercel serverless (ephemeral)
+DATABASE_PATH = "/tmp/takeoff.db"
+DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
