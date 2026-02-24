@@ -17,10 +17,29 @@ import os
 # DATABASE SETUP
 # ============================================================================
 
-# Use /tmp for Vercel serverless (ephemeral)
-DATABASE_PATH = "/tmp/takeoff.db"
-DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# Support both local SQLite and remote PostgreSQL
+# For Vercel: Use DATABASE_URL environment variable (PostgreSQL recommended)
+# For local: Use SQLite in /tmp or ./takeoff.db
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    # Default to /tmp SQLite for local/dev
+    DATABASE_PATH = "/tmp/takeoff.db"
+    DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
+    connect_args = {"check_same_thread": False}
+else:
+    # PostgreSQL on remote (convert Postgres:// to postgresql://)
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    connect_args = {}
+
+try:
+    engine = create_engine(DATABASE_URL, connect_args=connect_args)
+except Exception as db_error:
+    # Fallback to SQLite if connection fails
+    print(f"Database connection error: {db_error}. Falling back to local SQLite.")
+    DATABASE_URL = f"sqlite:////tmp/takeoff.db"
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
